@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">User Management</h1>
+    <div class="card mt-4">
+        <div class="card-header">Create User</div>
+        <div class="card-body">
+            <form id="create-user-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" class="form-control" id="create-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="create-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="create-password" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="createUser()">Create</button>
+            </form>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">Update User</div>
+        <div class="card-body">
+            <form id="update-user-form">
+                <div class="form-group">
+                    <label for="userId">User ID:</label>
+                    <input type="number" class="form-control" id="update-user-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" class="form-control" id="update-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="update-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="update-password" required>
+                </div>
+                <button type="button" class="btn btn-warning" onclick="updateUser()">Update</button>
+            </form>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">View User Details</div>
+        <div class="card-body">
+            <form id="view-user-form">
+                <div class="form-group">
+                    <label for="userId">User ID:</label>
+                    <input type="number" class="form-control" id="view-user-id" required>
+                </div>
+                <button type="button" class="btn btn-info" onclick="viewUserDetails()">View</button>
+            </form>
+            <div id="user-detail" class="mt-3"></div>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">View User Posts</div>
+        <div class="card-body">
+            <form id="view-user-posts-form">
+                <div class="form-group">
+                    <label for="userId">User ID:</label>
+                    <input type="number" class="form-control" id="view-user-posts-id" required>
+                </div>
+                <button type="button" class="btn btn-info" onclick="viewUserPosts()">View</button>
+            </form>
+            <div id="user-posts" class="mt-3"></div>
+        </div>
+    </div>
+    <div class="card mt-4">
+        <div class="card-header">Go to Post Management</div>
+        <div class="card-body">
+            <button class="btn btn-secondary" onclick="navigateToPost()">Go to Post Management</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function createUser() {
+        const username = $('#create-username').val();
+        const email = $('#create-email').val();
+        const password = $('#create-password').val();
+        const data = { username, email, password };
+
+        $.ajax({
+            url: `/api/user`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                alert(response);
+            },
+            error: function(error) {
+                alert('Error creating user: ' + error.responseText);
+            }
+        });
+    }
+
+    function updateUser() {
+        const userId = $('#update-user-id').val();
+        const username = $('#update-username').val();
+        const email = $('#update-email').val();
+        const password = $('#update-password').val();
+        const data = { id: userId, username, email, password };
+
+        $.ajax({
+            url: `/api/user`,
+            method: 'PATCH',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                alert(response);
+            },
+            error: function(error) {
+                alert('Error updating user: ' + error.responseText);
+            }
+        });
+    }
+
+    function viewUserDetails() {
+        const userId = $('#view-user-id').val();
+
+        $.ajax({
+            url: `/api/user/detail/${userId}`,
+            method: 'GET',
+            success: function(response) {
+                $('#user-detail').html(`
+                    <h5>User Details:</h5>
+                    <p><strong>Username:</strong> ${response.username}</p>
+                    <p><strong>Email:</strong> ${response.email}</p>
+                `);
+            },
+            error: function(error) {
+                alert('Error fetching user details: ' + error.responseText);
+            }
+        });
+    }
+
+    function viewUserPosts() {
+        const userId = $('#view-user-posts-id').val();
+
+        $.ajax({
+            url: `/api/user/list/${userId}`,
+            method: 'GET',
+            success: function(response) {
+                let postsHtml = '<h5>User Posts:</h5>';
+                response.forEach(post => {
+                    postsHtml += `
+                        <p><strong>Title:</strong> ${post.title}</p>
+                        <p><strong>Content:</strong> ${post.content}</p>
+                        <hr>
+                    `;
+                });
+                $('#user-posts').html(postsHtml);
+            },
+            error: function(error) {
+                alert('Error fetching user posts: ' + error.responseText);
+            }
+        });
+    }
+
+    function navigateToPost() {
+        window.location.href = '/post';
+    }
+</script>
+</body>
+</html>
