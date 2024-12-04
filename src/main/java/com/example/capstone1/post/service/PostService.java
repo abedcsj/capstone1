@@ -73,6 +73,10 @@ public class PostService {
         List<Post> posts = postRepository.findAll();
         return PostDto.createRes.postList(posts);
     }
+    public List<PostDto.createRes> searchPostsByTitle(String title) {
+        List<Post> posts = postRepository.findByTitleContaining(title);
+        return PostDto.createRes.postList(posts);
+    }
 
 }
 

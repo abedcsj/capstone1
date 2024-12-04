@@ -47,4 +47,10 @@ public class PostController {
         List<PostDto.createRes> postList = postService.getAllPosts();
         return ResponseEntity.ok(postList);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<PostDto.createRes>> searchPosts(@RequestParam String title) {
+        List<PostDto.createRes> searchResults = postService.searchPostsByTitle(title);
+        return ResponseEntity.ok(searchResults);
+    }
+
 }
